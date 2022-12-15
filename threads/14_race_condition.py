@@ -18,9 +18,11 @@ def retiros():
     global BALANCE
 
     for _ in range(0, 1_000_000):
-        lock.acquire()
-        BALANCE -= 1    # Sección crítica
-        lock.release()
+        try:
+            lock.acquire()
+            BALANCE -= 1
+        finally:
+            lock.release()
 
 if __name__ == '__main__':
     thread_1 = threading.Thread(target=depositos)
