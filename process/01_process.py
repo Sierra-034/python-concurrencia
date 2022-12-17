@@ -17,8 +17,10 @@ if __name__ == '__main__':
     # args o kargs
     process = multiprocessing.Process(
         target=nuevo_proceso,
+        daemon=True,
         name='Proceso hijo',
         args=('Mensaje desde argumento',))
 
     process.start()
     logging.info('Hola desde el proceso padre')
+    time.sleep(2)
