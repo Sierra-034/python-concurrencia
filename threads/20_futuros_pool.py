@@ -26,8 +26,16 @@ def generate_request(url):
 def check_status_code(response):
     logging.info(f'La respuesta del servidor {response[0]} es: {response[1].status_code}')
 
+def math_operation(n_1, n_2):
+    return n_1 + n_2
+
 if __name__ == '__main__':
     with ThreadPoolExecutor(max_workers=2) as executor:
         futuros = [executor.submit(generate_request, url) for url in URLS]
         for futuro in futuros:
-            futuro.add_done_callback(lambda future: check_status_code(future.result()))
+            futuro.add_done_callback(
+                lambda future: check_status_code(future.result()))
+
+        future = executor.submit(math_operation, 10, 20)
+        future.add_done_callback(
+            lambda future: logging.info(f'El resultado es: {future.result()}'))
