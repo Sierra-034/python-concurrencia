@@ -23,7 +23,7 @@ URLS = [
 ]
 
 def generate_request(url):
-    return url, requests.get(url)
+    return requests.get(url)
 
 def check_status_code(response, url):
     logging.info(f'La respuesta del servidor {url} es: {response.status_code}')
@@ -33,9 +33,8 @@ def math_operation(n_1, n_2):
 
 if __name__ == '__main__':
     with ThreadPoolExecutor(max_workers=2) as executor:
-        futuros = [executor.submit(generate_request, url) for url in URLS]
-        for futuro in as_completed(futuros):
-            url, response = futuro.result()
+        results = executor.map(generate_request, URLS)
+        for url, response in zip(URLS, results):
             check_status_code(response, url)
 
         future = executor.submit(math_operation, 10, 20)
