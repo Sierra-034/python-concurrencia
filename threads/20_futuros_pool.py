@@ -2,6 +2,8 @@ import time
 import logging
 import requests
 import threading
+
+from concurrent.futures import as_completed
 from concurrent.futures import ThreadPoolExecutor
 
 logging.basicConfig(
@@ -23,8 +25,8 @@ URLS = [
 def generate_request(url):
     return url, requests.get(url)
 
-def check_status_code(response):
-    logging.info(f'La respuesta del servidor {response[0]} es: {response[1].status_code}')
+def check_status_code(response, url):
+    logging.info(f'La respuesta del servidor {url} es: {response.status_code}')
 
 def math_operation(n_1, n_2):
     return n_1 + n_2
@@ -32,9 +34,9 @@ def math_operation(n_1, n_2):
 if __name__ == '__main__':
     with ThreadPoolExecutor(max_workers=2) as executor:
         futuros = [executor.submit(generate_request, url) for url in URLS]
-        for futuro in futuros:
-            futuro.add_done_callback(
-                lambda future: check_status_code(future.result()))
+        for futuro in as_completed(futuros):
+            url, response = futuro.result()
+            check_status_code(response, url)
 
         future = executor.submit(math_operation, 10, 20)
         future.add_done_callback(
