@@ -13,7 +13,9 @@ def is_even(number):
 
 if __name__ == '__main__':
     with Pool(processes=2) as executor:
-        result = executor.apply(is_even, args=(10,))
-        logging.info(f'El resultado es: {result}')
-
-    logging.info('Main process')
+        apply_result = executor.apply_async(is_even, args=(10,))
+        logging.info('Espera apply result por un valor')
+        apply_result.wait(timeout=2)
+        logging.info('Apply result finalizado')
+        logging.info(f'El resultado es: {apply_result.get(timeout=1)}')
+        logging.info('Fin del programa')
